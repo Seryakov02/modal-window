@@ -1,18 +1,23 @@
 function _createModal(options) {
+  const DEFAULT_WIDTH = "600px";
   const modal = document.createElement("div");
   modal.classList.add("vmodal");
   modal.insertAdjacentHTML(
     "afterbegin",
     `
-      <div class="modal-overlay">
-        <div class="modal-window">
+      <div class="modal-overlay" data-close="true">
+        <div class="modal-window" style="width:${options.width ||
+          DEFAULT_WIDTH}">
           <div class="modal-header">
-            <span class="modal-title">Modal title</span>
-            <span class="modal-close">&times;</span>
+            <span class="modal-title">${options.title || "Window"}</span>
+            ${
+              options.closable
+                ? `<span class="modal-close" data-close="true">&times</span>`
+                : ""
+            }
           </div>
           <div class="modal-body">
-            <p>Lorem ipsum dolor sit.</p>
-            <p>Lorem ipsum dolor sit.</p>
+            ${options.content || ""}
           </div>
           <div class="modal-footer">
             <button>Ok</button>
@@ -27,10 +32,42 @@ function _createModal(options) {
 }
 
 $.modal = function(options) {
+  const ANIMATION_SPEED = 200;
   const $modal = _createModal(options);
-  return {
-    open() {},
-    close() {},
-    destroy() {}
+  let closing = false;
+  let destroyed = false;
+
+  const modal = {
+    open() {
+      if (destroyed) {
+        return;
+      }
+      !closing && $modal.classList.add("open");
+    },
+    close() {
+      closing = true;
+      $modal.classList.remove("open");
+      $modal.classList.add("hide");
+      setTimeout(() => {
+        $modal.classList.remove("hide");
+        closing = false;
+      }, ANIMATION_SPEED);
+    },
+    destroy() {
+      $modal.remove();
+      $modal.removeEventListener("click", listener);
+      destroyed = true;
+    }
   };
+
+  const listener = event => {
+    console.log("clicked", event.target.dataset.close);
+    if (event.target.dataset.close) {
+      modal.close();
+    }
+  };
+
+  $modal.addEventListener("click", listener);
+
+  return modal;
 };
