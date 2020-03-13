@@ -5,5 +5,21 @@ const modal = $.modal({
     <p>Lorem ipsum dolor sit</p>
     <p>Lorem ipsum dolor sit</p>
   `,
-  width: ""
+  width: "",
+  footerButtons: [
+    {
+      text: "Ok",
+      type: "primary",
+      handler() {
+        modal.close();
+      }
+    },
+    {
+      text: "Cancel",
+      type: "danger",
+      handler() {
+        modal.close();
+      }
+    }
+  ]
 });
