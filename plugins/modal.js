@@ -47,7 +47,6 @@ function _createModal(options) {
       </div>
 `
   );
-
   const footer = _createModalFooter(options.footerButtons);
   footer.appendAfter(modal.querySelector("[data-content]"));
   document.body.appendChild(modal);
@@ -74,6 +73,9 @@ $.modal = function(options) {
       setTimeout(() => {
         $modal.classList.remove("hide");
         closing = false;
+        if (typeof options.onClose === "function") {
+          options.onClose();
+        }
       }, ANIMATION_SPEED);
     },
     destroy() {
